@@ -53,6 +53,14 @@ jobs:
           curl -sSL https://github.com/ocaml/opam/releases/download/2.3.0/opam-2.3.0-x86_64-linux -o $RUNNER_TEMP/opam
           sudo install $RUNNER_TEMP/opam /usr/local/bin/opam
 
+      - name: Build PCRE2
+        run: |
+          curl -LkSs https://github.com/PCRE2Project/pcre2/releases/download/pcre2-10.42/pcre2-10.42.tar.gz | gzip -d | tar -x
+          cd pcre2-10.42
+          CC=musl-gcc ./configure --enable-static --disable-shared
+          make -j$(nproc)
+          make install
+
       - name: Install OCaml libraries
         if: steps.cache-opam.outputs.cache-hit != 'true'
         run: |
