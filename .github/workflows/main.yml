@@ -71,8 +71,8 @@ jobs:
       - name: Build Haxe
         run: |
           set -ex
-          cd /tmp ; wget https://skarnet.org/toolchains/native/x86_64-linux-musl_pc-14.2.0.tar.xz
-          cd /usr/local ; sudo tar -zxf /tmp/x86_64-linux-musl_pc-14.2.0.tar.xz
+          cd /tmp ; wget -q https://skarnet.org/toolchains/native/x86_64-linux-musl_pc-14.2.0.tar.xz
+          cd /usr/local ; sudo tar -xf /tmp/x86_64-linux-musl_pc-14.2.0.tar.xz
           sudo ln -s /usr/local/x86_64-linux-musl_pc-14.2.0/lib/libc.so /usr/local/x86_64-linux-musl_pc-14.2.0/bin/ldd
           sudo ln -s /usr/local/x86_64-linux-musl_pc-14.2.0/lib/libc.so /lib/ld-musl-x86_64.so.1
           export PATH="/usr/local/x86_64-linux-musl_pc-14.2.0/bin:$PATH" ; hash -r
@@ -175,8 +175,8 @@ jobs:
       - name: Build Haxe
         run: |
           set -ex
-          cd /tmp ; wget https://skarnet.org/toolchains/native/aarch64-linux-musl_pi3-14.2.0.tar.xz
-          cd /usr/local ; sudo tar -zxf /tmp/aarch64-linux-musl_pi3-14.2.0.tar.xz
+          cd /tmp ; wget -q https://skarnet.org/toolchains/native/aarch64-linux-musl_pi3-14.2.0.tar.xz
+          cd /usr/local ; sudo tar -xf /tmp/aarch64-linux-musl_pi3-14.2.0.tar.xz
           sudo ln -s /usr/local/aarch64-linux-musl_pi3-14.2.0/lib/libc.so /usr/local/aarch64-linux-musl_pi3-14.2.0/bin/ldd
           sudo ln -s /usr/local/aarch64-linux-musl_pi3-14.2.0/lib/libc.so /lib/ld-musl-aarch64.so.1
           export PATH="/usr/local/aarch64-linux-musl_pi3-14.2.0/bin:$PATH" ; hash -r
