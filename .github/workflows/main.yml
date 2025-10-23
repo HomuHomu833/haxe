@@ -65,6 +65,11 @@ jobs:
         if: steps.cache-opam.outputs.cache-hit != 'true'
         run: |
           set -ex
+          export C_INCLUDE_PATH=/usr/local/include:$C_INCLUDE_PATH
+          export CPLUS_INCLUDE_PATH=/usr/local/include:$CPLUS_INCLUDE_PATH
+          export LIBRARY_PATH=/usr/local/lib:$LIBRARY_PATH
+          export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+          export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH
           opam init # --disable-sandboxing
           opam update
           opam switch create ${{ matrix.ocaml }}+muslnative+flambda ocaml-variants.${{ matrix.ocaml }}+options ocaml-option-flambda ocaml-option-musl ocaml-option-static
@@ -81,6 +86,11 @@ jobs:
       - name: Build Haxe
         run: |
           set -ex
+          export C_INCLUDE_PATH=/usr/local/include:$C_INCLUDE_PATH
+          export CPLUS_INCLUDE_PATH=/usr/local/include:$CPLUS_INCLUDE_PATH
+          export LIBRARY_PATH=/usr/local/lib:$LIBRARY_PATH
+          export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+          export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH
           eval $(opam env --switch=${{ matrix.ocaml }}+muslnative+flambda)
           opam config exec -- make STATICLINK=1 -s -j`nproc` haxe
           opam config exec -- make STATICLINK=1 -s haxelib
@@ -174,6 +184,11 @@ jobs:
         if: steps.cache-opam.outputs.cache-hit != 'true'
         run: |
           set -ex
+          export C_INCLUDE_PATH=/usr/local/include:$C_INCLUDE_PATH
+          export CPLUS_INCLUDE_PATH=/usr/local/include:$CPLUS_INCLUDE_PATH
+          export LIBRARY_PATH=/usr/local/lib:$LIBRARY_PATH
+          export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+          export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH
           opam init # --disable-sandboxing
           opam update
           opam switch create 4.13.1+muslnative+flambda ocaml-variants.4.13.1+options ocaml-option-flambda ocaml-option-musl ocaml-option-static
@@ -190,6 +205,11 @@ jobs:
       - name: Build Haxe
         run: |
           set -ex
+          export C_INCLUDE_PATH=/usr/local/include:$C_INCLUDE_PATH
+          export CPLUS_INCLUDE_PATH=/usr/local/include:$CPLUS_INCLUDE_PATH
+          export LIBRARY_PATH=/usr/local/lib:$LIBRARY_PATH
+          export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+          export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH
           eval $(opam env --switch=4.13.1+muslnative+flambda)
           opam config exec -- make STATICLINK=1 -s -j`nproc` haxe
           opam config exec -- make STATICLINK=1 -s haxelib
