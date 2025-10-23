@@ -67,7 +67,7 @@ jobs:
 
       - name: Setup OCaml Cross
         run: |
-          opam switch create musl-x86_64 ocaml-variants.5.2.0+options --packages=musl-cross,aarch64-musl-toolchain,ocaml-option-static
+          opam switch create musl-x86_64 --packages=ocaml-variants.4.14.0+options,ocaml-option-static,musl
           opam switch set musl-x86_64
 
       - name: Set ADD_REVISION=1 for non-release
@@ -170,7 +170,7 @@ jobs:
 
       - name: Setup OCaml Cross
         run: |
-          opam switch create musl-aarch64 ocaml-variants.5.3.0+options --packages=musl-cross,aarch64-musl-toolchain,ocaml-option-static
+          opam switch create musl-aarch64 --packages=ocaml-variants.4.13.1+options,ocaml-option-static,musl
           opam switch set musl-aarch64
 
       - name: Set ADD_REVISION=1 for non-release
