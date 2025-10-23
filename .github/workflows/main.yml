@@ -66,7 +66,7 @@ jobs:
           opam init # --disable-sandboxing
           opam update
           opam switch create ${{ matrix.ocaml }}+muslnative+flambda ocaml-variants.${{ matrix.ocaml }}+options ocaml-option-flambda
-          eval $(opam env --switch=4.14.0+muslnative+flambda)
+          eval $(opam env --switch=${{ matrix.ocaml }}+muslnative+flambda)
           opam pin add haxe . --no-action
           opam install haxe --deps-only --assume-depexts
           opam list
@@ -79,7 +79,7 @@ jobs:
       - name: Build Haxe
         run: |
           set -ex
-          eval $(opam env --switch=4.14.0+muslnative+flambda)
+          eval $(opam env --switch=${{ matrix.ocaml }}+muslnative+flambda)
           opam config exec -- make STATICLINK=1 -s -j`nproc` haxe
           opam config exec -- make STATICLINK=1 -s haxelib
           make STATICLINK=1 -s package_unix
@@ -172,7 +172,7 @@ jobs:
           opam init # --disable-sandboxing
           opam update
           opam switch create 4.13.1+muslnative+flambda ocaml-variants.4.13.1+options ocaml-option-flambda
-          eval $(opam env --switch=4.14.0+muslnative+flambda)
+          eval $(opam env --switch=4.13.1+muslnative+flambda)
           opam pin add haxe . --no-action
           opam install haxe --deps-only --assume-depexts
           opam list
