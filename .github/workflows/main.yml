@@ -81,7 +81,7 @@ jobs:
           set -ex
           opam init # --disable-sandboxing
           opam update
-          opam switch create ${{ matrix.ocaml }}+muslnative+flambda ocaml-variants.${{ matrix.ocaml }}+options ocaml-option-flambda
+          opam switch create ${{ matrix.ocaml }}+muslnative+flambda ocaml-variants.${{ matrix.ocaml }}+options ocaml-option-flambda ocaml-option-musl ocaml-option-static
           eval $(opam env --switch=${{ matrix.ocaml }}+muslnative+flambda)
           opam pin add haxe . --no-action
           opam install haxe --deps-only --assume-depexts
@@ -204,7 +204,7 @@ jobs:
           set -ex
           opam init # --disable-sandboxing
           opam update
-          opam switch create 4.13.1+muslnative+flambda ocaml-variants.4.13.1+options ocaml-option-flambda
+          opam switch create 4.13.1+muslnative+flambda ocaml-variants.4.13.1+options ocaml-option-flambda ocaml-option-musl ocaml-option-static
           eval $(opam env --switch=4.13.1+muslnative+flambda)
           opam pin add haxe . --no-action
           opam install haxe --deps-only --assume-depexts
