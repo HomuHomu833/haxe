@@ -165,7 +165,7 @@ jobs:
           set -ex
           cd /tmp ; wget -q https://skarnet.org/toolchains/native/aarch64-linux-musl_pi3-14.2.0.tar.xz
           cd /usr/local ; sudo tar --exclude='aarch64-linux-musl_pi3-14.2.0/usr' -xf /tmp/aarch64-linux-musl_pi3-14.2.0.tar.xz
-          mkdir usr ; cd usr
+          sudo mkdir usr ; cd usr
           sudo ln -s ../aarch64-linux-musl aarch64-linux-musl
           sudo ln -s ../bin bin
           sudo ln -s ../include include
