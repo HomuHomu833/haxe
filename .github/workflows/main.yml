@@ -56,7 +56,16 @@ jobs:
           cd $HOME
           git clone https://github.com/${{ github.repository_owner }}/zig-as-llvm
           # cp -R $ROOTDIR/patches/musl/zig/* $(whereis zig | awk '{print $2}' | xargs dirname)
-          cd zig-as-llvm/bin
+          sudo ln -sf zig-as-llvm/bin/cc /usr/bin/cc
+          sudo ln -sf zig-as-llvm/bin/cc /usr/bin/gcc
+          sudo ln -sf zig-as-llvm/bin/cc /usr/bin/clang
+          sudo ln -sf zig-as-llvm/bin/c++ /usr/bin/c++
+          sudo ln -sf zig-as-llvm/bin/cc /usr/bin/g++
+          sudo ln -sf zig-as-llvm/bin/cc /usr/bin/clang++
+          sudo ln -sf zig-as-llvm/bin/ar /usr/bin/ar
+          sudo ln -sf zig-as-llvm/bin/ranlib /usr/bin/ranlib
+          sudo ln -sf zig-as-llvm/bin/ld /usr/bin/ld
+          sudo ln -sf zig-as-llvm/bin/objcopy /usr/bin/objcopy
 
       - name: Install dependencies
         run: |
@@ -70,14 +79,6 @@ jobs:
         if: steps.cache-opam.outputs.cache-hit != 'true'
         run: |
           set -ex
-          TOOLCHAIN=$HOME/zig-as-llvm
-          export CC=$TOOLCHAIN/bin/cc
-          export CXX=$TOOLCHAIN/bin/c++
-          export AR=$TOOLCHAIN/bin/ar
-          export RANLIB=$TOOLCHAIN/bin/ranlib
-          export OBJCOPY=$TOOLCHAIN/bin/ranlib
-          export STRIP=$TOOLCHAIN/bin/objcopy
-          export PATH="$HOME/zig-as-llvm/bin:$PATH" ; hash -r
           opam init # --disable-sandboxing
           opam update
           opam switch create ${{ matrix.ocaml }}+muslnative+flambda ocaml-variants.${{ matrix.ocaml }}+options ocaml-option-flambda
@@ -94,14 +95,6 @@ jobs:
       - name: Build Haxe
         run: |
           set -ex
-          TOOLCHAIN=$HOME/zig-as-llvm
-          export CC=$TOOLCHAIN/bin/cc
-          export CXX=$TOOLCHAIN/bin/c++
-          export AR=$TOOLCHAIN/bin/ar
-          export RANLIB=$TOOLCHAIN/bin/ranlib
-          export OBJCOPY=$TOOLCHAIN/bin/ranlib
-          export STRIP=$TOOLCHAIN/bin/objcopy
-          export PATH="$HOME/zig-as-llvm/bin:$PATH" ; hash -r
           eval $(opam env --switch=${{ matrix.ocaml }}+muslnative+flambda)
           opam config exec -- make STATICLINK=1 -s -j`nproc` haxe
           opam config exec -- make STATICLINK=1 -s haxelib
@@ -188,11 +181,16 @@ jobs:
           cd $HOME
           git clone https://github.com/${{ github.repository_owner }}/zig-as-llvm
           # cp -R $ROOTDIR/patches/musl/zig/* $(whereis zig | awk '{print $2}' | xargs dirname)
-          cd zig-as-llvm/bin
-          ln -s cc gcc
-          ln -s cc clang
-          ln -s c++ g++
-          ln -s c++ clang++
+          sudo ln -sf zig-as-llvm/bin/cc /usr/bin/cc
+          sudo ln -sf zig-as-llvm/bin/cc /usr/bin/gcc
+          sudo ln -sf zig-as-llvm/bin/cc /usr/bin/clang
+          sudo ln -sf zig-as-llvm/bin/c++ /usr/bin/c++
+          sudo ln -sf zig-as-llvm/bin/cc /usr/bin/g++
+          sudo ln -sf zig-as-llvm/bin/cc /usr/bin/clang++
+          sudo ln -sf zig-as-llvm/bin/ar /usr/bin/ar
+          sudo ln -sf zig-as-llvm/bin/ranlib /usr/bin/ranlib
+          sudo ln -sf zig-as-llvm/bin/ld /usr/bin/ld
+          sudo ln -sf zig-as-llvm/bin/objcopy /usr/bin/objcopy
 
       - name: Install dependencies
         run: |
@@ -204,14 +202,6 @@ jobs:
         if: steps.cache-opam.outputs.cache-hit != 'true'
         run: |
           set -ex
-          TOOLCHAIN=$HOME/zig-as-llvm
-          export CC=$TOOLCHAIN/bin/cc
-          export CXX=$TOOLCHAIN/bin/c++
-          export AR=$TOOLCHAIN/bin/ar
-          export RANLIB=$TOOLCHAIN/bin/ranlib
-          export OBJCOPY=$TOOLCHAIN/bin/ranlib
-          export STRIP=$TOOLCHAIN/bin/objcopy
-          export PATH="$HOME/zig-as-llvm/bin:$PATH" ; hash -r
           opam init # --disable-sandboxing
           opam update
           opam switch create 4.13.1+muslnative+flambda ocaml-variants.4.13.1+options ocaml-option-flambda
@@ -228,14 +218,6 @@ jobs:
       - name: Build Haxe
         run: |
           set -ex
-          TOOLCHAIN=$HOME/zig-as-llvm
-          export CC=$TOOLCHAIN/bin/cc
-          export CXX=$TOOLCHAIN/bin/c++
-          export AR=$TOOLCHAIN/bin/ar
-          export RANLIB=$TOOLCHAIN/bin/ranlib
-          export OBJCOPY=$TOOLCHAIN/bin/ranlib
-          export STRIP=$TOOLCHAIN/bin/objcopy
-          export PATH="$HOME/zig-as-llvm/bin:$PATH" ; hash -r
           eval $(opam env --switch=4.13.1+muslnative+flambda)
           opam config exec -- make STATICLINK=1 -s -j`nproc` haxe
           opam config exec -- make STATICLINK=1 -s haxelib
