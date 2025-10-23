@@ -82,7 +82,7 @@ jobs:
           eval $(opam env --switch=4.14.0+muslnative+flambda)
           opam config exec -- make -s -j`nproc` STATICLINK=1 haxe
           opam config exec -- make -s haxelib
-          make -s package_unix
+          make STATICLINK=1 -s package_unix
           ls -l out
           ldd -v ./haxe
           ldd -v ./haxelib
@@ -186,7 +186,7 @@ jobs:
           eval $(opam env --switch=4.13.1+muslnative+flambda)
           opam config exec -- make -s -j`nproc` STATICLINK=1 haxe
           opam config exec -- make -s haxelib
-          make -s package_unix
+          make STATICLINK=1 -s package_unix
           ls -l out
           ldd -v ./haxe
           ldd -v ./haxelib
