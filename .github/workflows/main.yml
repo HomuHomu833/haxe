@@ -162,6 +162,14 @@ jobs:
           sudo apt-get update -qqy
           sudo apt-get install -y ocaml-nox opam musl-tools libpcre2-dev zlib1g-dev libgtk2.0-dev libmbedtls-dev libipc-system-simple-perl libstring-shellquote-perl ninja-build
 
+      - name: Build PCRE2
+        run: |
+          curl -LkSs https://github.com/PCRE2Project/pcre2/releases/download/pcre2-10.42/pcre2-10.42.tar.gz | gzip -d | tar -x
+          cd pcre2-10.42
+          CC=musl-gcc ./configure --enable-static --disable-shared
+          make -j$(nproc)
+          make install
+
       - name: Install OCaml libraries
         if: steps.cache-opam.outputs.cache-hit != 'true'
         run: |
