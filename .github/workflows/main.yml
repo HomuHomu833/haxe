@@ -183,9 +183,10 @@ jobs:
           export LD_LIBRARY_PATH="/usr/local/aarch64-linux-musl_pi3-14.2.0/lib"
           opam switch create 4.13.1+muslnative+flambda ocaml-variants.4.13.1+options ocaml-option-flambda
           eval $(opam env --switch=4.13.1+muslnative+flambda)
-          opam config exec -- make STATICLINK=1 -s -j`nproc` haxe
-          opam config exec -- make STATICLINK=1 -s haxelib
-          make STATICLINK=1 -s package_unix
+          # opam config exec -- make STATICLINK=1 -s -j`nproc` haxe
+          # opam config exec -- make STATICLINK=1 -s haxelib
+          # make STATICLINK=1 -s package_unix
+          opam config exec -- make STATICLINK=1
           ls -l out
           ldd -v ./haxe
           ldd -v ./haxelib
