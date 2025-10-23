@@ -164,7 +164,7 @@ jobs:
         run: |
           set -ex
           cd /tmp ; wget -q https://skarnet.org/toolchains/native/aarch64-linux-musl_pi3-14.2.0.tar.xz
-          cd /usr/local ; sudo tar -xf /tmp/aarch64-linux-musl_pi3-14.2.0.tar.xz
+          cd /usr/local ; sudo tar --exclude='aarch64-linux-musl_pi3-14.2.0/usr' -xf /tmp/aarch64-linux-musl_pi3-14.2.0.tar.xz
           sudo ln -sf /usr/local/aarch64-linux-musl_pi3-14.2.0/lib/libc.so /usr/local/aarch64-linux-musl_pi3-14.2.0/bin/ldd
           sudo ln -sf /usr/local/aarch64-linux-musl_pi3-14.2.0/lib/libc.so /lib/ld-musl-aarch64.so.1
           export PATH="/usr/local/aarch64-linux-musl_pi3-14.2.0/bin:$PATH" ; hash -r
