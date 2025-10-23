@@ -68,6 +68,11 @@ jobs:
           sudo make -j"$(nproc --all)" install
           cd ..
 
+          curl -LkSs http://deb.debian.org/debian/pool/main/m/mbedtls/mbedtls_2.28.3.orig.tar.gz | gzip -d | tar -x
+          cd Mbed-TLS-mbedtls-8f97ca5
+          CC=musl-gcc make -j$(nproc)
+          sudo make install
+
       - name: Install OCaml libraries
         if: steps.cache-opam.outputs.cache-hit != 'true'
         run: |
@@ -193,6 +198,11 @@ jobs:
           CC=musl-gcc ./configure --static
           sudo make -j"$(nproc --all)" install
           cd ..
+
+          curl -LkSs http://deb.debian.org/debian/pool/main/m/mbedtls/mbedtls_2.28.3.orig.tar.gz | gzip -d | tar -x
+          cd Mbed-TLS-mbedtls-8f97ca5
+          CC=musl-gcc make -j$(nproc)
+          sudo make install
 
       - name: Install OCaml libraries
         if: steps.cache-opam.outputs.cache-hit != 'true'
