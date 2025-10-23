@@ -75,14 +75,14 @@ endif
 all: haxe tools
 
 haxe:
-	$(DUNE_COMMAND) build --ocamlopt-flags "-cc musl-gcc -ccopt '-static'" --workspace dune-workspace.dev src-prebuild/prebuild.exe
+	$(DUNE_COMMAND) build --workspace dune-workspace.dev src-prebuild/prebuild.exe
 	_build/default/src-prebuild/prebuild.exe libparams $(LIB_PARAMS) > lib.sexp
 	_build/default/src-prebuild/prebuild.exe version "$(ADD_REVISION)" "$(BRANCH)" "$(COMMIT_SHA)" > src/compiler/version.ml
-	$(DUNE_COMMAND) build --ocamlopt-flags "-cc musl-gcc -ccopt '-static' "--workspace dune-workspace.dev src/haxe.exe
+	$(DUNE_COMMAND) build --workspace dune-workspace.dev src/haxe.exe
 	cp -f _build/default/src/haxe.exe ./"$(HAXE_OUTPUT)"
 
 plugin: haxe
-	$(DUNE_COMMAND) build --ocamlopt-flags "-cc musl-gcc -ccopt '-static'" --workspace dune-workspace.dev plugins/$(PLUGIN)/$(PLUGIN).cmxs
+	$(DUNE_COMMAND) build --workspace dune-workspace.dev plugins/$(PLUGIN)/$(PLUGIN).cmxs
 	mkdir -p plugins/$(PLUGIN)/cmxs/$(SYSTEM_NAME)
 	cp -f _build/default/plugins/$(PLUGIN)/$(PLUGIN).cmxs plugins/$(PLUGIN)/cmxs/$(SYSTEM_NAME)/plugin.cmxs
 
