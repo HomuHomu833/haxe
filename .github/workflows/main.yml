@@ -56,7 +56,7 @@ jobs:
           cd $HOME
           git clone https://github.com/${{ github.repository_owner }}/zig-as-llvm
           # cp -R $ROOTDIR/patches/musl/zig/* $(whereis zig | awk '{print $2}' | xargs dirname)
-          cd zig-as-llvm/biin
+          cd zig-as-llvm/bin
           ln -s cc gcc
           ln -s cc clang
           ln -s c++ g++
@@ -178,7 +178,7 @@ jobs:
           cd $HOME
           git clone https://github.com/${{ github.repository_owner }}/zig-as-llvm
           # cp -R $ROOTDIR/patches/musl/zig/* $(whereis zig | awk '{print $2}' | xargs dirname)
-          cd zig-as-llvm/biin
+          cd zig-as-llvm/bin
           ln -s cc gcc
           ln -s cc clang
           ln -s c++ g++
