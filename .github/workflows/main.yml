@@ -168,7 +168,7 @@ jobs:
           cd pcre2-10.42
           CC=musl-gcc ./configure --enable-static --disable-shared
           make -j$(nproc)
-          make install
+          sudo make install
 
       - name: Install OCaml libraries
         if: steps.cache-opam.outputs.cache-hit != 'true'
