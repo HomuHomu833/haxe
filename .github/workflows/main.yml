@@ -45,33 +45,11 @@ jobs:
       - name: Print Neko version
         run: neko -version 2>&1
 
-      - name: Setup Zig
-        uses: mlugg/setup-zig@v2.0.5
-        with:
-          version: "0.16.0-dev.577+c50aa2b95"
-          use-cache: false
-
-      - name: Setup Zig toolchain
-        run: |
-          cd $HOME
-          git clone https://github.com/${{ github.repository_owner }}/zig-as-llvm
-          # cp -R $ROOTDIR/patches/musl/zig/* $(whereis zig | awk '{print $2}' | xargs dirname)
-          sudo ln -sf zig-as-llvm/bin/cc /usr/bin/cc
-          sudo ln -sf zig-as-llvm/bin/cc /usr/bin/gcc
-          sudo ln -sf zig-as-llvm/bin/cc /usr/bin/clang
-          sudo ln -sf zig-as-llvm/bin/c++ /usr/bin/c++
-          sudo ln -sf zig-as-llvm/bin/cc /usr/bin/g++
-          sudo ln -sf zig-as-llvm/bin/cc /usr/bin/clang++
-          sudo ln -sf zig-as-llvm/bin/ar /usr/bin/ar
-          sudo ln -sf zig-as-llvm/bin/ranlib /usr/bin/ranlib
-          sudo ln -sf zig-as-llvm/bin/ld /usr/bin/ld
-          sudo ln -sf zig-as-llvm/bin/objcopy /usr/bin/objcopy
-
       - name: Install dependencies
         run: |
           set -ex
           sudo apt-get update -qqy
-          sudo apt-get install -qqy darcs bubblewrap ocaml-nox libpcre2-dev zlib1g-dev libgtk2.0-dev libmbedtls-dev ninja-build libstring-shellquote-perl libipc-system-simple-perl
+          sudo apt-get install -qqy darcs bubblewrap ocaml-nox musl-tools libpcre2-dev zlib1g-dev libgtk2.0-dev libmbedtls-dev ninja-build libstring-shellquote-perl libipc-system-simple-perl
           curl -sSL https://github.com/ocaml/opam/releases/download/2.3.0/opam-2.3.0-x86_64-linux -o $RUNNER_TEMP/opam
           sudo install $RUNNER_TEMP/opam /usr/local/bin/opam
 
@@ -170,33 +148,11 @@ jobs:
       - name: Print Neko version
         run: neko -version 2>&1
 
-      - name: Setup Zig
-        uses: mlugg/setup-zig@v2.0.5
-        with:
-          version: "0.16.0-dev.577+c50aa2b95"
-          use-cache: false
-
-      - name: Setup Zig toolchain
-        run: |
-          cd $HOME
-          git clone https://github.com/${{ github.repository_owner }}/zig-as-llvm
-          # cp -R $ROOTDIR/patches/musl/zig/* $(whereis zig | awk '{print $2}' | xargs dirname)
-          sudo ln -sf zig-as-llvm/bin/cc /usr/bin/cc
-          sudo ln -sf zig-as-llvm/bin/cc /usr/bin/gcc
-          sudo ln -sf zig-as-llvm/bin/cc /usr/bin/clang
-          sudo ln -sf zig-as-llvm/bin/c++ /usr/bin/c++
-          sudo ln -sf zig-as-llvm/bin/cc /usr/bin/g++
-          sudo ln -sf zig-as-llvm/bin/cc /usr/bin/clang++
-          sudo ln -sf zig-as-llvm/bin/ar /usr/bin/ar
-          sudo ln -sf zig-as-llvm/bin/ranlib /usr/bin/ranlib
-          sudo ln -sf zig-as-llvm/bin/ld /usr/bin/ld
-          sudo ln -sf zig-as-llvm/bin/objcopy /usr/bin/objcopy
-
       - name: Install dependencies
         run: |
           set -ex
           sudo apt-get update -qqy
-          sudo apt-get install -qqy ocaml-nox opam libpcre2-dev zlib1g-dev libgtk2.0-dev libmbedtls-dev libipc-system-simple-perl libstring-shellquote-perl ninja-build
+          sudo apt-get install -qqy ocaml-nox opam musl-tools libpcre2-dev zlib1g-dev libgtk2.0-dev libmbedtls-dev libipc-system-simple-perl libstring-shellquote-perl ninja-build
 
       - name: Install OCaml libraries
         if: steps.cache-opam.outputs.cache-hit != 'true'
