@@ -10,6 +10,7 @@ jobs:
     env:
       PLATFORM: linux64
       OPAMYES: 1
+      ZIG_TARGET: x86_64-linux-musl
     strategy:
       fail-fast: false
       matrix:
@@ -44,6 +45,23 @@ jobs:
       - name: Print Neko version
         run: neko -version 2>&1
 
+      - name: Setup Zig
+        uses: mlugg/setup-zig@v2.0.5
+        with:
+          version: "0.16.0-dev.577+c50aa2b95"
+          use-cache: false
+
+      - name: Setup Zig toolchain
+        run: |
+          cd $HOME
+          git clone https://github.com/${{ github.repository_owner }}/zig-as-llvm
+          # cp -R $ROOTDIR/patches/musl/zig/* $(whereis zig | awk '{print $2}' | xargs dirname)
+          cd zig-as-llvm/biin
+          ln -s cc gcc
+          ln -s cc clang
+          ln -s c++ g++
+          ln -s c++ clang++
+
       - name: Install dependencies
         run: |
           set -ex
@@ -56,13 +74,7 @@ jobs:
         if: steps.cache-opam.outputs.cache-hit != 'true'
         run: |
           set -ex
-          cd /tmp ; wget -q https://skarnet.org/toolchains/native/x86_64-linux-musl_pc-14.2.0.tar.xz
-          cd /usr/local ; sudo tar -xf /tmp/x86_64-linux-musl_pc-14.2.0.tar.xz
-          sudo ln -sf /usr/local/x86_64-linux-musl_pc-14.2.0/lib/libc.so /usr/local/x86_64-linux-musl_pc-14.2.0/bin/ldd
-          sudo ln -sf /usr/local/x86_64-linux-musl_pc-14.2.0/lib/libc.so /lib/ld-musl-x86_64.so.1
-          export PATH="/usr/local/x86_64-linux-musl_pc-14.2.0/bin:$PATH" ; hash -r
-          export LD_LIBRARY_PATH="/usr/local/x86_64-linux-musl_pc-14.2.0/lib"
-          cd ${{ github.workspace }}
+          export PATH="$HOME/zig-as-llvm/bin:$PATH" ; hash -r
           opam init # --disable-sandboxing
           opam update
           opam switch create ${{ matrix.ocaml }}+muslnative+flambda ocaml-variants.${{ matrix.ocaml }}+options ocaml-option-flambda
@@ -79,6 +91,7 @@ jobs:
       - name: Build Haxe
         run: |
           set -ex
+          export PATH="$HOME/zig-as-llvm/bin:$PATH" ; hash -r
           eval $(opam env --switch=${{ matrix.ocaml }}+muslnative+flambda)
           opam config exec -- make STATICLINK=1 -s -j`nproc` haxe
           opam config exec -- make STATICLINK=1 -s haxelib
@@ -123,6 +136,7 @@ jobs:
     env:
       PLATFORM: linux-arm64
       OPAMYES: 1
+      ZIG_TARGET: aarch64-linux-musl
     steps:
       - uses: actions/checkout@main
         with:
@@ -153,6 +167,23 @@ jobs:
       - name: Print Neko version
         run: neko -version 2>&1
 
+      - name: Setup Zig
+        uses: mlugg/setup-zig@v2.0.5
+        with:
+          version: "0.16.0-dev.577+c50aa2b95"
+          use-cache: false
+
+      - name: Setup Zig toolchain
+        run: |
+          cd $HOME
+          git clone https://github.com/${{ github.repository_owner }}/zig-as-llvm
+          # cp -R $ROOTDIR/patches/musl/zig/* $(whereis zig | awk '{print $2}' | xargs dirname)
+          cd zig-as-llvm/biin
+          ln -s cc gcc
+          ln -s cc clang
+          ln -s c++ g++
+          ln -s c++ clang++
+
       - name: Install dependencies
         run: |
           set -ex
@@ -163,20 +194,7 @@ jobs:
         if: steps.cache-opam.outputs.cache-hit != 'true'
         run: |
           set -ex
-          cd /tmp ; wget -q https://skarnet.org/toolchains/native/aarch64-linux-musl_pi3-14.2.0.tar.xz
-          cd /usr/local ; sudo tar --exclude='aarch64-linux-musl_pi3-14.2.0/usr' -xf /tmp/aarch64-linux-musl_pi3-14.2.0.tar.xz
-          sudo mkdir usr ; cd usr
-          sudo ln -s ../aarch64-linux-musl aarch64-linux-musl
-          sudo ln -s ../bin bin
-          sudo ln -s ../include include
-          sudo ln -s ../lib lib
-          sudo ln -s ../lib lib64
-          sudo ln -s ../libexec libexec
-          sudo ln -s ../share share
-          sudo ln -sf /usr/local/aarch64-linux-musl_pi3-14.2.0/lib/libc.so /usr/local/aarch64-linux-musl_pi3-14.2.0/bin/ldd
-          sudo ln -sf /usr/local/aarch64-linux-musl_pi3-14.2.0/lib/libc.so /lib/ld-musl-aarch64.so.1
-          export PATH="/usr/local/aarch64-linux-musl_pi3-14.2.0/bin:$PATH" ; hash -r
-          export LD_LIBRARY_PATH="/usr/local/aarch64-linux-musl_pi3-14.2.0/lib"
+          export PATH="$HOME/zig-as-llvm/bin:$PATH" ; hash -r
           opam init # --disable-sandboxing
           opam update
           opam switch create 4.13.1+muslnative+flambda ocaml-variants.4.13.1+options ocaml-option-flambda
@@ -193,6 +211,7 @@ jobs:
       - name: Build Haxe
         run: |
           set -ex
+          export PATH="$HOME/zig-as-llvm/bin:$PATH" ; hash -r
           eval $(opam env --switch=4.13.1+muslnative+flambda)
           opam config exec -- make STATICLINK=1 -s -j`nproc` haxe
           opam config exec -- make STATICLINK=1 -s haxelib
