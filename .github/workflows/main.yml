@@ -65,11 +65,6 @@ jobs:
           opam list
           ocamlopt -v
 
-      - name: Setup OCaml Cross
-        run: |
-          opam switch create musl-x86_64 --packages=ocaml-variants.4.14.0+options,ocaml-option-static,musl
-          opam switch set musl-x86_64
-
       - name: Set ADD_REVISION=1 for non-release
         if: ${{ !startsWith(github.ref, 'refs/tags/') }}
         run: echo "ADD_REVISION=1" >> $GITHUB_ENV
@@ -77,7 +72,14 @@ jobs:
       - name: Build Haxe
         run: |
           set -ex
-          eval $(opam env)
+          cd /tmp ; wget https://musl.cc/x86_64-linux-musl-native.tgz
+          cd /usr/local ; sudo tar -zxf /tmp/x86_64-linux-musl-native.tgz
+          sudo ln -s /usr/local/x86_64-linux-musl-native/lib/libc.so /usr/local/x86_64-linux-musl-native/bin/ldd
+          sudo ln -s /usr/local/x86_64-linux-musl-native/lib/libc.so /lib/ld-musl-x86_64.so.1
+          export PATH="/usr/local/x86_64-linux-musl-native/bin:$PATH" ; hash -r
+          export LD_LIBRARY_PATH="/usr/local/x86_64-linux-musl-native/lib"
+          opam switch create 4.14.0+muslnative+flambda ocaml-variants.4.14.0+options ocaml-option-flambda
+          eval $(opam env --switch=4.14.0+muslnative+flambda)
           opam config exec -- make -s -j`nproc` STATICLINK=1 haxe
           opam config exec -- make -s haxelib
           make -s package_unix
@@ -136,7 +138,6 @@ jobs:
       - name: Install Neko from S3
         run: |
           set -ex
-
           curl -sSL https://build.haxe.org/builds/neko/$PLATFORM/neko_latest.tar.gz -o $RUNNER_TEMP/neko_latest.tar.gz
           tar -xf $RUNNER_TEMP/neko_latest.tar.gz -C $RUNNER_TEMP
           NEKOPATH=`echo $RUNNER_TEMP/neko-*-*`
@@ -168,11 +169,6 @@ jobs:
           opam list
           ocamlopt -v
 
-      - name: Setup OCaml Cross
-        run: |
-          opam switch create musl-aarch64 --packages=ocaml-variants.4.13.1+options,ocaml-option-static,musl
-          opam switch set musl-aarch64
-
       - name: Set ADD_REVISION=1 for non-release
         if: ${{ !startsWith(github.ref, 'refs/tags/') }}
         run: echo "ADD_REVISION=1" >> $GITHUB_ENV
@@ -180,7 +176,14 @@ jobs:
       - name: Build Haxe
         run: |
           set -ex
-          eval $(opam env)
+          cd /tmp ; wget https://musl.cc/aarch64-linux-musl-native.tgz
+          cd /usr/local ; sudo tar -zxf /tmp/aarch64-linux-musl-native.tgz
+          sudo ln -s /usr/local/aarch64-linux-musl-native/lib/libc.so /usr/local/aarch64-linux-musl-native/bin/ldd
+          sudo ln -s /usr/local/aarch64-linux-musl-native/lib/libc.so /lib/ld-musl-aarch64.so.1
+          export PATH="/usr/local/aarch64-linux-musl-native/bin:$PATH" ; hash -r
+          export LD_LIBRARY_PATH="/usr/local/aarch64-linux-musl-native/lib"
+          opam switch create 4.13.1+muslnative+flambda ocaml-variants.4.13.1+options ocaml-option-flambda
+          eval $(opam env --switch=4.13.1+muslnative+flambda)
           opam config exec -- make -s -j`nproc` STATICLINK=1 haxe
           opam config exec -- make -s haxelib
           make -s package_unix
