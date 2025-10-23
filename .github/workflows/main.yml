@@ -71,12 +71,12 @@ jobs:
       - name: Build Haxe
         run: |
           set -ex
-          cd /tmp ; wget https://musl.cc/x86_64-linux-musl-native.tgz
-          cd /usr/local ; sudo tar -zxf /tmp/x86_64-linux-musl-native.tgz
-          sudo ln -s /usr/local/x86_64-linux-musl-native/lib/libc.so /usr/local/x86_64-linux-musl-native/bin/ldd
-          sudo ln -s /usr/local/x86_64-linux-musl-native/lib/libc.so /lib/ld-musl-x86_64.so.1
-          export PATH="/usr/local/x86_64-linux-musl-native/bin:$PATH" ; hash -r
-          export LD_LIBRARY_PATH="/usr/local/x86_64-linux-musl-native/lib"
+          cd /tmp ; wget https://skarnet.org/toolchains/native/x86_64-linux-musl_pc-14.2.0.tar.xz
+          cd /usr/local ; sudo tar -zxf /tmp/x86_64-linux-musl_pc-14.2.0.tar.xz
+          sudo ln -s /usr/local/x86_64-linux-musl_pc-14.2.0/lib/libc.so /usr/local/x86_64-linux-musl_pc-14.2.0/bin/ldd
+          sudo ln -s /usr/local/x86_64-linux-musl_pc-14.2.0/lib/libc.so /lib/ld-musl-x86_64.so.1
+          export PATH="/usr/local/x86_64-linux-musl_pc-14.2.0/bin:$PATH" ; hash -r
+          export LD_LIBRARY_PATH="/usr/local/x86_64-linux-musl_pc-14.2.0/lib"
           opam switch create 4.14.0+muslnative+flambda ocaml-variants.4.14.0+options ocaml-option-flambda
           eval $(opam env --switch=4.14.0+muslnative+flambda)
           opam config exec -- make -s -j`nproc` STATICLINK=1 haxe
@@ -175,12 +175,12 @@ jobs:
       - name: Build Haxe
         run: |
           set -ex
-          cd /tmp ; wget https://musl.cc/aarch64-linux-musl-native.tgz
-          cd /usr/local ; sudo tar -zxf /tmp/aarch64-linux-musl-native.tgz
-          sudo ln -s /usr/local/aarch64-linux-musl-native/lib/libc.so /usr/local/aarch64-linux-musl-native/bin/ldd
-          sudo ln -s /usr/local/aarch64-linux-musl-native/lib/libc.so /lib/ld-musl-aarch64.so.1
-          export PATH="/usr/local/aarch64-linux-musl-native/bin:$PATH" ; hash -r
-          export LD_LIBRARY_PATH="/usr/local/aarch64-linux-musl-native/lib"
+          cd /tmp ; wget https://skarnet.org/toolchains/native/aarch64-linux-musl_pi3-14.2.0.tar.xz
+          cd /usr/local ; sudo tar -zxf /tmp/aarch64-linux-musl_pi3-14.2.0.tar.xz
+          sudo ln -s /usr/local/aarch64-linux-musl_pi3-14.2.0/lib/libc.so /usr/local/aarch64-linux-musl_pi3-14.2.0/bin/ldd
+          sudo ln -s /usr/local/aarch64-linux-musl_pi3-14.2.0/lib/libc.so /lib/ld-musl-aarch64.so.1
+          export PATH="/usr/local/aarch64-linux-musl_pi3-14.2.0/bin:$PATH" ; hash -r
+          export LD_LIBRARY_PATH="/usr/local/aarch64-linux-musl_pi3-14.2.0/lib"
           opam switch create 4.13.1+muslnative+flambda ocaml-variants.4.13.1+options ocaml-option-flambda
           eval $(opam env --switch=4.13.1+muslnative+flambda)
           opam config exec -- make -s -j`nproc` STATICLINK=1 haxe
