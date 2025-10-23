@@ -6,14 +6,14 @@ on: [push, pull_request]
 
 jobs:
   linux-build:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
     env:
       PLATFORM: linux64
       OPAMYES: 1
     strategy:
       fail-fast: false
       matrix:
-        ocaml: ["5.3.0"]
+        ocaml: ["4.14.0"]
     steps:
       - uses: actions/checkout@main
         with:
@@ -29,7 +29,6 @@ jobs:
       - name: Install Neko from S3
         run: |
           set -ex
-
           curl -sSL https://build.haxe.org/builds/neko/$PLATFORM/neko_latest.tar.gz -o $RUNNER_TEMP/neko_latest.tar.gz
           tar -xf $RUNNER_TEMP/neko_latest.tar.gz -C $RUNNER_TEMP
           NEKOPATH=`echo $RUNNER_TEMP/neko-*-*`
@@ -119,7 +118,7 @@ jobs:
           path: extra/doc
 
   linux-arm64-build:
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-22.04-arm
     env:
       PLATFORM: linux-arm64
       OPAMYES: 1
