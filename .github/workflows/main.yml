@@ -4,7 +4,7 @@ on: [push, pull_request]
 jobs:
   linux-build:
     runs-on: ubuntu-latest
-    container: alpine:3.20
+    container: alpine:latest
     env:
       PLATFORM: linux64
       OPAMYES: 1
@@ -97,7 +97,7 @@ jobs:
 
   linux-arm64-build:
     runs-on: ubuntu-latest
-    container: arm64v8/alpine:3.14
+    container: arm64v8/alpine:latest
     env:
       PLATFORM: linux-arm64
       OPAMYES: 1
