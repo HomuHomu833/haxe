@@ -26,6 +26,7 @@ jobs:
         run : |
           curl -LkSs https://github.com/HaxeFoundation/neko/archive/refs/tags/v2-4-1.tar.gz | gzip -d | tar -x
           cd neko-2-4-1
+          sed -i 's/add_library(\([[:space:]]*libneko[[:space:]]*\)SHARED/add_library(\1STATIC/' CMakeLists.txt
           mkdir build
           cd build
           cmake .. -DCMAKE_BUILD_TYPE=Release -DSTATIC_DEPS=all -DBUILD_SHARED_LIBS=OFF -DSTATIC_BOEHMGC=ON -DCMAKE_EXE_LINKER_FLAGS="-static" 
@@ -113,6 +114,7 @@ jobs:
         run : |
           curl -LkSs https://github.com/HaxeFoundation/neko/archive/refs/tags/v2-4-1.tar.gz | gzip -d | tar -x
           cd neko-2-4-1
+          sed -i 's/add_library(\([[:space:]]*libneko[[:space:]]*\)SHARED/add_library(\1STATIC/' CMakeLists.txt
           mkdir build
           cd build
           cmake .. -DCMAKE_BUILD_TYPE=Release -DSTATIC_DEPS=all -DBUILD_SHARED_LIBS=OFF -DSTATIC_BOEHMGC=ON -DCMAKE_EXE_LINKER_FLAGS="-static" 
