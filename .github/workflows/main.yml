@@ -8,11 +8,6 @@ jobs:
     env:
       PLATFORM: linux64
       OPAMYES: 1
-      ZIG_TARGET: x86_64-linux-musl
-    strategy:
-      fail-fast: false
-      matrix:
-        ocaml: ["4.14.0"]
 
     steps:
       - name: Install dependencies
@@ -27,25 +22,25 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Cache opam
-        id: cache-opam
-        uses: actions/cache@v4
-        with:
-          path: /root/.opam/
-          key: alpine-${{ matrix.ocaml }}-${{ hashFiles('./haxe.opam', './libs/') }}
-
-      - name: Print Neko version
-        run: neko -version 2>&1
+      - name: Build and Install Neko
+        run : |
+          curl -LkSs https://github.com/HaxeFoundation/neko/archive/refs/tags/v2-4-1.tar.gz | gzip -d | tar -x
+          cd neko-2-4-1
+          mkdir build
+          cd build
+          cmake .. -DCMAKE_BUILD_TYPE=Release -DSTATIC_DEPS=all -DBUILD_SHARED_LIBS=OFF -DSTATIC_BOEHMGC=ON -DCMAKE_EXE_LINKER_FLAGS="-static" 
+          make -j$(nproc)
+          make install
+          neko -version 2>&1
 
       - name: Install OCaml libraries
-        if: steps.cache-opam.outputs.cache-hit != 'true'
         run: |
           set -ex
           export CC=musl-gcc
           opam init --bare --disable-sandboxing
           opam update
-          opam switch create ${{ matrix.ocaml }}+muslnative+flambda ocaml-variants.${{ matrix.ocaml }}+options ocaml-option-flambda ocaml-option-musl ocaml-option-static
-          eval $(opam env --switch=${{ matrix.ocaml }}+muslnative+flambda)
+          opam switch create 4.14.2+muslnative+flambda+static ocaml-variants.${{ matrix.ocaml }}+options ocaml-option-flambda ocaml-option-static
+          eval $(opam env --switch=4.14.2+muslnative+flambda+static)
           opam pin add haxe . --no-action
           opam install -y haxe --deps-only --assume-depexts
           opam list
@@ -59,7 +54,7 @@ jobs:
         run: |
           set -ex
           export CC=musl-gcc
-          eval $(opam env --switch=${{ matrix.ocaml }}+muslnative+flambda)
+          eval $(opam env --switch=4.14.2+muslnative+flambda+static)
           make STATICLINK=1 -s -j$(nproc) haxe haxelib package_unix
           ls -l out
           ldd ./haxe || true
@@ -101,7 +96,6 @@ jobs:
     env:
       PLATFORM: linux-arm64
       OPAMYES: 1
-      ZIG_TARGET: aarch64-linux-musl
 
     steps:
       - name: Install dependencies
@@ -112,29 +106,29 @@ jobs:
             git opam ocaml ocaml-compiler-libs ocaml-findlib ocamlbuild make \
             gtk+2.0-dev perl perl-utils ninja coreutils
 
-      - uses: actions/checkout@main
-        with:
-          submodules: recursive
+      # - uses: actions/checkout@main
+        # with:
+          # submodules: recursive
 
-      - name: Cache opam
-        id: cache-opam
-        uses: actions/cache@v4
-        with:
-          path: /root/.opam/
-          key: alpine-arm64-${{ hashFiles('./haxe.opam', './libs/') }}
-
-      - name: Print Neko version
-        run: neko -version 2>&1
+      - name: Build and Install Neko
+        run : |
+          curl -LkSs https://github.com/HaxeFoundation/neko/archive/refs/tags/v2-4-1.tar.gz | gzip -d | tar -x
+          cd neko-2-4-1
+          mkdir build
+          cd build
+          cmake .. -DCMAKE_BUILD_TYPE=Release -DSTATIC_DEPS=all -DBUILD_SHARED_LIBS=OFF -DSTATIC_BOEHMGC=ON -DCMAKE_EXE_LINKER_FLAGS="-static" 
+          make -j$(nproc)
+          make install
+          neko -version 2>&1
 
       - name: Install OCaml libraries
-        if: steps.cache-opam.outputs.cache-hit != 'true'
         run: |
           set -ex
           export CC=musl-gcc
           opam init --bare --disable-sandboxing
           opam update
-          opam switch create 4.13.1+muslnative+flambda ocaml-variants.4.13.1+options ocaml-option-flambda ocaml-option-musl ocaml-option-static
-          eval $(opam env --switch=4.13.1+muslnative+flambda)
+          opam switch create 4.14.2+muslnative+flambda+static ocaml-variants.4.13.1+options ocaml-option-flambda ocaml-option-static
+          eval $(opam env --switch=4.14.2+muslnative+flambda+static)
           opam pin add haxe . --no-action
           opam install -y haxe --deps-only --assume-depexts
           opam list
@@ -148,7 +142,7 @@ jobs:
         run: |
           set -ex
           export CC=musl-gcc
-          eval $(opam env --switch=4.13.1+muslnative+flambda)
+          eval $(opam env --switch=4.14.2+muslnative+flambda+static)
           make STATICLINK=1 -s -j$(nproc) haxe haxelib package_unix
           ls -l out
           ldd ./haxe || true
