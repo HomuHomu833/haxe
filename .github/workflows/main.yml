@@ -14,7 +14,7 @@ jobs:
         run: |
           set -ex
           apk update
-          apk add --no-cache bash curl tar xz build-base musl-dev zlib-dev pcre2-dev mbedtls-dev \
+          apk add --no-cache bash curl tar xz build-base autoconf automake libtool musl-dev zlib-dev pcre2-dev mbedtls-dev \
             git opam ocaml ocaml-compiler-libs ocaml-findlib ocamlbuild make cmake \
             gtk+2.0-dev gtk+3.0-dev perl perl-utils ninja coreutils
 
@@ -36,7 +36,6 @@ jobs:
       - name: Install OCaml libraries
         run: |
           set -ex
-          export CC=musl-gcc
           opam init --bare --disable-sandboxing
           opam update
           opam switch create 4.14.2+muslnative+flambda+static ocaml-variants.${{ matrix.ocaml }}+options ocaml-option-flambda ocaml-option-static
@@ -102,7 +101,7 @@ jobs:
         run: |
           set -ex
           apk update
-          apk add --no-cache bash curl tar xz build-base musl-dev zlib-dev pcre2-dev mbedtls-dev \
+          apk add --no-cache bash curl tar xz build-base autoconf automake libtool musl-dev zlib-dev pcre2-dev mbedtls-dev \
             git opam ocaml ocaml-compiler-libs ocaml-findlib ocamlbuild make cmake \
             gtk+2.0-dev gtk+3.0-dev perl perl-utils ninja coreutils
 
