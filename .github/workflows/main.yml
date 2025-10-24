@@ -16,7 +16,7 @@ jobs:
           apk update
           apk add --no-cache bash curl tar xz build-base musl-dev zlib-dev pcre2-dev mbedtls-dev \
             git opam ocaml ocaml-compiler-libs ocaml-findlib ocamlbuild make cmake \
-            gtk+2.0-dev perl perl-utils ninja coreutils
+            gtk+2.0-dev gtk+3.0-dev perl perl-utils ninja coreutils
 
       - uses: actions/checkout@main
         with:
@@ -104,7 +104,7 @@ jobs:
           apk update
           apk add --no-cache bash curl tar xz build-base musl-dev zlib-dev pcre2-dev mbedtls-dev \
             git opam ocaml ocaml-compiler-libs ocaml-findlib ocamlbuild make cmake \
-            gtk+2.0-dev perl perl-utils ninja coreutils
+            gtk+2.0-dev gtk+3.0-dev perl perl-utils ninja coreutils
 
       # - uses: actions/checkout@main
         # with:
