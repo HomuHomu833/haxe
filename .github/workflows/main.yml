@@ -15,10 +15,6 @@ jobs:
         ocaml: ["4.14.0"]
 
     steps:
-      - uses: actions/checkout@main
-        with:
-          submodules: recursive
-
       - name: Install dependencies
         run: |
           set -ex
@@ -26,6 +22,10 @@ jobs:
           apk add --no-cache bash curl tar xz build-base musl-dev zlib-dev pcre2-dev mbedtls-dev \
             git opam ocaml ocaml-compiler-libs ocaml-findlib ocamlbuild make \
             gtk+2.0-dev perl perl-utils ninja coreutils neko
+
+      - uses: actions/checkout@main
+        with:
+          submodules: recursive
 
       - name: Cache opam
         id: cache-opam
@@ -97,17 +97,13 @@ jobs:
 
   linux-arm64-build:
     runs-on: ubuntu-latest
-    container: arm64v8/alpine:3.20
+    container: arm64v8/alpine:3.14
     env:
       PLATFORM: linux-arm64
       OPAMYES: 1
       ZIG_TARGET: aarch64-linux-musl
 
     steps:
-      - uses: actions/checkout@main
-        with:
-          submodules: recursive
-
       - name: Install dependencies
         run: |
           set -ex
@@ -115,6 +111,10 @@ jobs:
           apk add --no-cache bash curl tar xz build-base musl-dev zlib-dev pcre2-dev mbedtls-dev \
             git opam ocaml ocaml-compiler-libs ocaml-findlib ocamlbuild make \
             gtk+2.0-dev perl perl-utils ninja coreutils neko
+
+      - uses: actions/checkout@main
+        with:
+          submodules: recursive
 
       - name: Cache opam
         id: cache-opam
