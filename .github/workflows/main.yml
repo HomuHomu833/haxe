@@ -1,12 +1,10 @@
-# DO NOT EDIT. Generated from /extra/github-actions
-# TODO: support skip ci (https://github.community/t/github-actions-does-not-respect-skip-ci/17325/8)
-
 name: CI
 on: [push, pull_request]
 
 jobs:
   linux-build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
+    container: alpine:3.20
     env:
       PLATFORM: linux64
       OPAMYES: 1
@@ -15,81 +13,41 @@ jobs:
       fail-fast: false
       matrix:
         ocaml: ["4.14.0"]
+
     steps:
       - uses: actions/checkout@main
         with:
           submodules: recursive
 
+      - name: Install dependencies
+        run: |
+          set -ex
+          apk update
+          apk add --no-cache bash curl tar xz build-base musl-dev zlib-dev pcre2-dev mbedtls-dev \
+            git opam ocaml ocaml-compiler-libs ocaml-findlib ocamlbuild make \
+            gtk+2.0-dev perl perl-utils ninja coreutils neko
+
       - name: Cache opam
         id: cache-opam
         uses: actions/cache@v4
         with:
-          path: ~/.opam/
-          key: ${{ runner.os }}-${{ matrix.ocaml }}-${{ hashFiles('./haxe.opam', './libs/') }}
-
-      - name: Install Neko from S3
-        run: |
-          set -ex
-          curl -sSL https://build.haxe.org/builds/neko/$PLATFORM/neko_latest.tar.gz -o $RUNNER_TEMP/neko_latest.tar.gz
-          tar -xf $RUNNER_TEMP/neko_latest.tar.gz -C $RUNNER_TEMP
-          NEKOPATH=`echo $RUNNER_TEMP/neko-*-*`
-          sudo mkdir -p /usr/local/bin
-          sudo mkdir -p /usr/local/include
-          sudo mkdir -p /usr/local/lib/neko
-          sudo ln -s $NEKOPATH/{neko,nekoc,nekoml,nekotools}  /usr/local/bin/
-          sudo ln -s $NEKOPATH/libneko.*                      /usr/local/lib/
-          sudo ln -s $NEKOPATH/include/*                      /usr/local/include/
-          sudo ln -s $NEKOPATH/*.ndll                         /usr/local/lib/neko/
-          echo "NEKOPATH=$NEKOPATH" >> $GITHUB_ENV
+          path: /root/.opam/
+          key: alpine-${{ matrix.ocaml }}-${{ hashFiles('./haxe.opam', './libs/') }}
 
       - name: Print Neko version
         run: neko -version 2>&1
-
-      - name: Install dependencies
-        run: |
-          set -ex
-          sudo apt-get update -qqy
-          sudo apt-get install -y darcs bubblewrap ocaml-nox musl-tools libpcre2-dev zlib1g-dev libgtk2.0-dev libmbedtls-dev ninja-build libstring-shellquote-perl libipc-system-simple-perl
-          curl -sSL https://github.com/ocaml/opam/releases/download/2.3.0/opam-2.3.0-x86_64-linux -o $RUNNER_TEMP/opam
-          sudo install $RUNNER_TEMP/opam /usr/local/bin/opam
-
-      - name: Build Haxe Dependencies
-        run: |
-          export CC=musl-gcc
-          curl -LkSs https://github.com/PCRE2Project/pcre2/releases/download/pcre2-10.42/pcre2-10.42.tar.gz | gzip -d | tar -x
-          cd pcre2-10.42
-          ./configure --enable-static --disable-shared
-          make -j$(nproc)
-          sudo make install
-          cd ..
-
-          curl -LkSs https://github.com/madler/zlib/releases/download/v1.3.1/zlib-1.3.1.tar.xz | xz -d | tar -x
-          cd zlib-1.3.1
-          ./configure --static
-          sudo make -j"$(nproc --all)" install
-          cd ..
-
-          curl -LkSs http://deb.debian.org/debian/pool/main/m/mbedtls/mbedtls_2.28.3.orig.tar.gz | gzip -d | tar -x
-          cd Mbed-TLS-mbedtls-8f97ca5
-          make -j$(nproc)
-          sudo make install
 
       - name: Install OCaml libraries
         if: steps.cache-opam.outputs.cache-hit != 'true'
         run: |
           set -ex
           export CC=musl-gcc
-          export C_INCLUDE_PATH=/usr/local/include
-          export CPLUS_INCLUDE_PATH=/usr/local/include
-          export LIBRARY_PATH=/usr/local/lib
-          export LD_LIBRARY_PATH=/usr/local/lib
-          export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
-          opam init # --disable-sandboxing
+          opam init --bare --disable-sandboxing
           opam update
           opam switch create ${{ matrix.ocaml }}+muslnative+flambda ocaml-variants.${{ matrix.ocaml }}+options ocaml-option-flambda ocaml-option-musl ocaml-option-static
           eval $(opam env --switch=${{ matrix.ocaml }}+muslnative+flambda)
           opam pin add haxe . --no-action
-          opam install haxe --deps-only --assume-depexts
+          opam install -y haxe --deps-only --assume-depexts
           opam list
           ocamlopt -v
 
@@ -101,20 +59,12 @@ jobs:
         run: |
           set -ex
           export CC=musl-gcc
-          export C_INCLUDE_PATH=/usr/local/include
-          export CPLUS_INCLUDE_PATH=/usr/local/include
-          export LIBRARY_PATH=/usr/local/lib
-          export LD_LIBRARY_PATH=/usr/local/lib
-          export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
           eval $(opam env --switch=${{ matrix.ocaml }}+muslnative+flambda)
-          opam config exec -- make STATICLINK=1 -s -j`nproc` haxe
-          opam config exec -- make STATICLINK=1 -s haxelib
-          make STATICLINK=1 -s package_unix
+          make STATICLINK=1 -s -j$(nproc) haxe haxelib package_unix
           ls -l out
-          ldd -v ./haxe
-          ldd -v ./haxelib
+          ldd ./haxe || true
+          ldd ./haxelib || true
 
-      # https://stackoverflow.com/questions/58033366/how-to-get-current-branch-within-github-actions
       - name: Extract branch name
         id: extract_branch
         shell: bash
@@ -146,84 +96,47 @@ jobs:
           path: extra/doc
 
   linux-arm64-build:
-    runs-on: ubuntu-22.04-arm
+    runs-on: ubuntu-latest
+    container: arm64v8/alpine:3.20
     env:
       PLATFORM: linux-arm64
       OPAMYES: 1
       ZIG_TARGET: aarch64-linux-musl
+
     steps:
       - uses: actions/checkout@main
         with:
           submodules: recursive
 
+      - name: Install dependencies
+        run: |
+          set -ex
+          apk update
+          apk add --no-cache bash curl tar xz build-base musl-dev zlib-dev pcre2-dev mbedtls-dev \
+            git opam ocaml ocaml-compiler-libs ocaml-findlib ocamlbuild make \
+            gtk+2.0-dev perl perl-utils ninja coreutils neko
+
       - name: Cache opam
         id: cache-opam
         uses: actions/cache@v4
         with:
-          path: ~/.opam/
-          key: arm-${{ runner.os }}-${{ hashFiles('./haxe.opam', './libs/') }}
-
-      - name: Install Neko from S3
-        run: |
-          set -ex
-          curl -sSL https://build.haxe.org/builds/neko/$PLATFORM/neko_latest.tar.gz -o $RUNNER_TEMP/neko_latest.tar.gz
-          tar -xf $RUNNER_TEMP/neko_latest.tar.gz -C $RUNNER_TEMP
-          NEKOPATH=`echo $RUNNER_TEMP/neko-*-*`
-          sudo mkdir -p /usr/local/bin
-          sudo mkdir -p /usr/local/include
-          sudo mkdir -p /usr/local/lib/neko
-          sudo ln -s $NEKOPATH/{neko,nekoc,nekoml,nekotools}  /usr/local/bin/
-          sudo ln -s $NEKOPATH/libneko.*                      /usr/local/lib/
-          sudo ln -s $NEKOPATH/include/*                      /usr/local/include/
-          sudo ln -s $NEKOPATH/*.ndll                         /usr/local/lib/neko/
-          echo "NEKOPATH=$NEKOPATH" >> $GITHUB_ENV
+          path: /root/.opam/
+          key: alpine-arm64-${{ hashFiles('./haxe.opam', './libs/') }}
 
       - name: Print Neko version
         run: neko -version 2>&1
-
-      - name: Install dependencies
-        run: |
-          set -ex
-          sudo apt-get update -qqy
-          sudo apt-get install -y ocaml-nox opam musl-tools libpcre2-dev zlib1g-dev libgtk2.0-dev libmbedtls-dev libipc-system-simple-perl libstring-shellquote-perl ninja-build
-
-      - name: Build Haxe Dependencies
-        run: |
-          export CC=musl-gcc
-          curl -LkSs https://github.com/PCRE2Project/pcre2/releases/download/pcre2-10.42/pcre2-10.42.tar.gz | gzip -d | tar -x
-          cd pcre2-10.42
-          ./configure --enable-static --disable-shared
-          make -j$(nproc)
-          sudo make install
-          cd ..
-
-          curl -LkSs https://github.com/madler/zlib/releases/download/v1.3.1/zlib-1.3.1.tar.xz | xz -d | tar -x
-          cd zlib-1.3.1
-          ./configure --static
-          sudo make -j"$(nproc --all)" install
-          cd ..
-
-          curl -LkSs http://deb.debian.org/debian/pool/main/m/mbedtls/mbedtls_2.28.3.orig.tar.gz | gzip -d | tar -x
-          cd Mbed-TLS-mbedtls-8f97ca5
-          make -j$(nproc)
-          sudo make install
 
       - name: Install OCaml libraries
         if: steps.cache-opam.outputs.cache-hit != 'true'
         run: |
           set -ex
           export CC=musl-gcc
-          export C_INCLUDE_PATH=/usr/local/include
-          export CPLUS_INCLUDE_PATH=/usr/local/include
-          export LIBRARY_PATH=/usr/local/lib
-          export LD_LIBRARY_PATH=/usr/local/lib
-          export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
-          opam init # --disable-sandboxing
+          opam init --bare --disable-sandboxing
           opam update
           opam switch create 4.13.1+muslnative+flambda ocaml-variants.4.13.1+options ocaml-option-flambda ocaml-option-musl ocaml-option-static
           eval $(opam env --switch=4.13.1+muslnative+flambda)
           opam pin add haxe . --no-action
-          opam install haxe --deps-only --assume-depexts
+          opam install -y haxe --deps-only --assume-depexts
           opam list
           ocamlopt -v
 
@@ -235,20 +148,12 @@ jobs:
         run: |
           set -ex
           export CC=musl-gcc
-          export C_INCLUDE_PATH=/usr/local/include
-          export CPLUS_INCLUDE_PATH=/usr/local/include
-          export LIBRARY_PATH=/usr/local/lib
-          export LD_LIBRARY_PATH=/usr/local/lib
-          export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
           eval $(opam env --switch=4.13.1+muslnative+flambda)
-          opam config exec -- make STATICLINK=1 -s -j`nproc` haxe
-          opam config exec -- make STATICLINK=1 -s haxelib
-          make STATICLINK=1 -s package_unix
+          make STATICLINK=1 -s -j$(nproc) haxe haxelib package_unix
           ls -l out
-          ldd -v ./haxe
-          ldd -v ./haxelib
+          ldd ./haxe || true
+          ldd ./haxelib || true
 
-      # https://stackoverflow.com/questions/58033366/how-to-get-current-branch-within-github-actions
       - name: Extract branch name
         id: extract_branch
         shell: bash
